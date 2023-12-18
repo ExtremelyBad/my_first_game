@@ -75,16 +75,17 @@ int WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int n
 
 	Input input = {};
 
-	float delta_time = 0.0166666f;
+	float delta_time = 0.016666f;
 	LARGE_INTEGER frame_begin_time;
 	QueryPerformanceCounter(&frame_begin_time);
 
 	float performance_frequency;
 	{
 		LARGE_INTEGER perf;
-		QueryPerformanceCounter(&perf);
+		QueryPerformanceFrequency(&perf);
 		performance_frequency = (float)perf.QuadPart;
 	}
+
 
 	while (running)
 	{
@@ -108,16 +109,16 @@ int WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int n
 #define process_button(b, vk)\
 case vk:\
 {\
+	input.buttons[b].changed = is_down != input.buttons[b].is_down;\
 	input.buttons[b].is_down = is_down;\
-	input.buttons[b].changed = true;\
 } break;
 
 					switch (vk_code)
 					{
 						process_button(BUTTON_UP, VK_UP);
 						process_button(BUTTON_DOWN, VK_DOWN);
-						process_button(BUTTON_LEFT, VK_LEFT);
-						process_button(BUTTON_RIGHT, VK_RIGHT);
+						process_button(BUTTON_W, 'W');
+						process_button(BUTTON_S, 'S');
 					}
 
 				}break;
@@ -129,12 +130,10 @@ case vk:\
 			}
 		}
 
-		//simulate
+		// Simulate
 		simulate_game(&input, delta_time);
 
-		
-
-		//render
+		// Render
 		StretchDIBits(hdc, 0, 0, render_state.width, render_state.height, 0, 0, render_state.width, render_state.height, render_state.memory, &render_state.bitmap_info, DIB_RGB_COLORS, SRCCOPY);
 
 		LARGE_INTEGER frame_end_time;
